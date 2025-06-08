@@ -8,6 +8,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
+import util.Vec2;
 
 
 import java.util.Random;
@@ -68,18 +69,18 @@ public class App extends Application {
                 int c2 = c1 + 1;
                 int c3 = (int)Math.floor(j/block);
                 int c4 = c3 + 1;
-                double v1x = Math.cos(getValueAt(c1,c3, seed));
-                double v1y = Math.sin(getValueAt(c1,c3, seed));
-                double v2x = Math.cos(getValueAt(c2,c3, seed));
-                double v2y = Math.sin(getValueAt(c2,c3, seed));
-                double v3x = Math.cos(getValueAt(c1,c4, seed));
-                double v3y = Math.sin(getValueAt(c1,c4, seed));
-                double v4x = Math.cos(getValueAt(c2,c4, seed));
-                double v4y = Math.sin(getValueAt(c2,c4, seed));
-                double d1 = v1x * (i/block - c1) + v1y * (j/block - c3);
-                double d2 = v2x * (i/block - c2) + v2y * (j/block - c3);
-                double d3 = v3x * (i/block - c1) + v3y * (j/block - c4);
-                double d4 = v4x * (i/block - c2) + v4y * (j/block - c4);
+                double theta1 = getValueAt(c1,c3, seed);
+                Vec2 gradVec1 = new Vec2(Math.cos(theta1), Math.sin(theta1));
+                Vec2 offVec1 = new Vec2(i/block - c1, j/block - c3);
+                double theta2 = getValueAt(c2,c3, seed);
+                Vec2 gradVec2 = new Vec2(Math.cos(theta2), Math.sin(theta2));
+                Vec2 offVec2 = new Vec2(i/block - c2, j/block - c3);
+                double theta3 = getValueAt(c1,c4, seed);
+                Vec2 gradVec3 = new Vec2(Math.cos(theta3), Math.sin(theta3));
+                Vec2 offVec3 = new Vec2(i/block - c1, j/block - c4);
+                double theta4 = getValueAt(c2,c4, seed);
+                Vec2 gradVec4 = new Vec2(Math.cos(theta4), Math.sin(theta4));
+                Vec2 offVec4 = new Vec2(i/block - c2, j/block - c4);
                 //System.out.println(d1);
 
                 double sx = i/block - c1;
@@ -91,6 +92,10 @@ public class App extends Application {
                 // double f1 = 6*Math.pow(sx, 5) - 15*Math.pow(sx, 4) + 10*Math.pow(sx, 3);
                 // double f2 = 6*Math.pow(sy, 5) - 15*Math.pow(sy, 4) + 10*Math.pow(sy, 3);
 
+                double d1 = gradVec1.dot(offVec1);
+                double d2 = gradVec2.dot(offVec2);
+                double d3 = gradVec3.dot(offVec3);
+                double d4 = gradVec4.dot(offVec4);
                 double i1 = d1 + f1*(d2 - d1);
                 double i2 = d3 + f1*(d4 - d3);
                 double finalValue = i1 + f2*(i2 - i1);
