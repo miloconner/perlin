@@ -12,7 +12,7 @@ plugins {
 }
 
 javafx {
-    // version = "13"
+    // version = "21"
     modules = [ 'javafx.controls' ]
 }
 
@@ -41,6 +41,7 @@ java {
 application {
     // Define the main class for the application.
     mainClass = 'perlin.App'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
 }
 
 tasks.named('test') {
