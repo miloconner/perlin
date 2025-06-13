@@ -153,8 +153,8 @@ public class App extends Application {
         primaryStage.setTitle("Perlin FX");
         primaryStage.setScene(scene);
         primaryStage.show();
-        // miloNoise(size, pixelWriter);
-        mikeNoise(size, pixelWriter);
+        miloNoise(size, pixelWriter);
+        // mikeNoise(size, pixelWriter);
     }
 
     public int toRGBValue(double noiseValue) {
