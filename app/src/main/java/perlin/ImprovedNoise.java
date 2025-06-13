@@ -27,79 +27,87 @@ public class ImprovedNoise {
         }
 
         /**
-         * <h2>What "Works" Means for a Fade Function in Perlin Noise</h2> A fade
-         * function "works"
-         * well if it helps to create smooth, continuous noise without visible artifacts
-         * (like
-         * creases or sharp edges) at the boundaries of the grid cells. This smoothness
-         * is often
-         * characterized by the continuity of the noise function and its derivatives.
+         * <h2>What "Works" Means for a Fade Function in Perlin Noise</h2>
+         * <p>
+         * A fade function "works" well if it helps to create smooth, continuous noise
+         * without visible artifacts (like creases or sharp edges) at the boundaries of
+         * the grid cells. This smoothness is often characterized by the continuity of
+         * the noise function and its derivatives.
+         * </p>
          * <ul>
-         * <li>Classic Perlin Noise (using 3t² - 2t³): This fade function results in
-         * noise that is C1
-         * continuous. This means the noise function itself is continuous, and its first
-         * derivative
-         * (rate of change, or slope) is also continuous across cell boundaries.
-         * <li>Improved Perlin Noise (using 6t⁵ - 15t⁴ + 10t³): This fade function
-         * results in noise
-         * that is C2 continuous. This means the noise function, its first derivative,
-         * AND its second
-         * derivative are all continuous. This leads to even smoother results with fewer
-         * directional
-         * artifacts.
+         * <li>
+         * <b>Classic Perlin Noise (using 3t² - 2t³):</b>
+         * <br>
+         * This fade function results in noise that is <b>C1 continuous</b>.
+         * The noise function itself is continuous, and its first derivative (rate of
+         * change, or slope)
+         * is also continuous across cell boundaries.
+         * </li>
+         * <li>
+         * <b>Improved Perlin Noise (using 6t⁵ - 15t⁴ + 10t³):</b>
+         * <br>
+         * This fade function results in noise that is <b>C2 continuous</b>.
+         * The noise function, its first derivative, <i>and</i> its second derivative
+         * are all continuous.
+         * This leads to even smoother results with fewer directional artifacts.
+         * </li>
          * </ul>
          * <p>
-         * The Key Mathematical Properties Required: For a fade function f(t) to be
-         * effective in
-         * reducing artifacts at t=0 and t=1 (the cell boundaries), it generally needs
-         * to satisfy
-         * these conditions:
+         * <b>Key Mathematical Properties Required:</b>
+         * For a fade function f(t) to be effective in reducing artifacts at t=0 and t=1
+         * (the cell boundaries),
+         * it generally needs to satisfy these conditions:
+         * </p>
          * <ol>
-         * <li>f(0) = 0: At the start of the interpolation interval, the weight should
-         * be 0.
-         * <li>f(1) = 1: At the end of the interpolation interval, the weight should be
-         * 1. 3. f'(0) =
-         * 0 (First derivative at t=0 is zero): This is crucial. It means the rate of
-         * change of the
-         * interpolation weight is zero as you enter a new cell from one side. This
-         * helps eliminate
-         * creases.
-         * <li>f'(1) = 0 (First derivative at t=1 is zero): Similarly, the rate of
-         * change is zero as
-         * you leave the cell on the other side.
+         * <li><b>f(0) = 0:</b> At the start of the interpolation interval, the weight
+         * should be 0.</li>
+         * <li><b>f(1) = 1:</b> At the end of the interpolation interval, the weight
+         * should be 1.</li>
+         * <li><b>f'(0) = 0:</b> (First derivative at t=0 is zero) This is crucial. It
+         * means
+         * the rate of change of the interpolation weight is zero as you enter a new
+         * cell from one side. This helps eliminate creases.</li>
+         * <li><b>f'(1) = 0:</b> (First derivative at t=1 is zero) Similarly, the rate
+         * of
+         * change is zero as you leave the cell on the other side.</li>
          * </ol>
          * <p>
          * For even smoother C2 continuity (as in improved Perlin noise), you'd also
          * need:
+         * </p>
          * <ol>
-         * <li>f''(0) = 0 (Second derivative at t=0 is zero)
-         * <li>f''(1) = 0 (Second derivative at t=1 is zero)
+         * <li><b>f''(0) = 0:</b> (Second derivative at t=0 is zero)</li>
+         * <li><b>f''(1) = 0:</b> (Second derivative at t=1 is zero)</li>
          * </ol>
-         * <h2>This particular fade function</h2> 6t⁵ - 15t⁴ + 10t³ (Improved Perlin
-         * Fade / Quintic
-         * Hermite Interpolation)<br>
-         * The classic Perlin fade is: 3t² - 2t³
+         * <h2>This particular fade function</h2>
          * <p>
-         * Check of f(t) = 6t⁵ - 15t⁴ + 10t³
+         * <b>6t⁵ - 15t⁴ + 10t³</b> (Improved Perlin Fade / Quintic Hermite
+         * Interpolation)<br>
+         * The classic Perlin fade is: <b>3t² - 2t³</b>
+         * </p>
+         * <p>
+         * <b>Check of f(t) = 6t⁵ - 15t⁴ + 10t³</b>
+         * </p>
          * <ul>
-         * f(0) = 0 (OK)
-         * <li>f(1) = 6 - 15 + 10 = 1 (OK)
-         * <li>f'(t) = 30t⁴ - 60t³ + 30t²
+         * <li>f(0) = 0 (OK)</li>
+         * <li>f(1) = 6 - 15 + 10 = 1 (OK)</li>
+         * <li>f'(t) = 30t⁴ - 60t³ + 30t²</li>
          * <ul>
-         * <li>f'(0) = 0 (OK)
-         * <li>f'(1) = 30 - 60 + 30 = 0 (OK)
+         * <li>f'(0) = 0 (OK)</li>
+         * <li>f'(1) = 30 - 60 + 30 = 0 (OK)</li>
          * </ul>
-         * <li>f''(t) = 120t³ - 180t² + 60t
+         * <li>f''(t) = 120t³ - 180t² + 60t</li>
          * <ul>
-         * <li>f''(0) = 0 (OK - leads to C2 continuity)
-         * <li>f''(1) = 120 - 180 + 60 = 0 (OK - leads to C2 continuity)
+         * <li>f''(0) = 0 (OK - leads to C2 continuity)</li>
+         * <li>f''(1) = 120 - 180 + 60 = 0 (OK - leads to C2 continuity)</li>
          * </ul>
          * </ul>
+         * <p>
          * This function works better by ensuring the second derivative is also zero at
-         * the
-         * boundaries, leading to smoother results.
-         * 
-         * @param t the value to fade, it must the in the range 0 <= t < 1
+         * the boundaries, leading to smoother results.
+         * </p>
+         *
+         * @param t the value to fade, it must be in the range 0 <= t < 1
          * @return the faded value.
          */
         public static double fade(double t) {
