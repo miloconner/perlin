@@ -50,11 +50,4 @@ public class Vec2 {
   public double dot(Vec2 other) {
     return this.x*other.x + this.y*other.y;
   }
-
-  public void transformThis(double theta, double cX, double cY, double oX, double oY) { //cY is stretch of Y, 1 is same stretch
-    Vec2 tmp = this.clone();
-    tmp.x = ((this.x - oX) * Math.cos(theta) - (this.y - oY) * Math.sin(theta)) * cX;
-    tmp.y = ((this.x - oX) * Math.sin(theta) + (this.y - oY) * Math.cos(theta))  * cY;
-    this.x = tmp.x + oX; this.y = tmp.y + oY;
-  }
 }
