@@ -17,9 +17,9 @@ public class Perlin {
 
     private double[] getAnglesAt(long seed, int... coords) {
         double[] rands = new double[dim-1];
-        for (int i = dim; i > 1; i--) {
+        for (int i = 0; i < dim - 1; i++) {
             long randVal = seed;
-            for (int j = 0; 0 < i; j++) {
+            for (int j = i - 1; j > 0; j--) {
                 randVal = (long)Math.pow(randVal, coords[j]);
             }
             Random rand = new Random(randVal);
@@ -33,7 +33,7 @@ public class Perlin {
     }
 
     private Vector[] genCorners(Vector minimum) {
-        Vector[] corners = new Vector[dim];
+        Vector[] corners = new Vector[(int)Math.pow(2, dim)];
 
         for (int i = 0; i < Math.pow(2, dim); i++) {
             double[] coords = new double[dim];
@@ -71,7 +71,13 @@ public class Perlin {
 
             comps[dim-1] = prod;
             gradVecs[i] = new Vector(dim, comps);
-            offVecs[i] = pos.add(corners[i].negative());
+            double length = gradVecs[i].magnitude();
+            if (Math.abs(length - 1.0) > 1e-6) {
+                System.err.println("Non-unit gradient: " + length);
+            }
+            // System.out.println(length);
+            offVecs[i] = pos.add(corners[i].negative().scale(block)).scale(1/block); //corners are in blocks so must be scaled up and then the dot must be scaled down so back in unit size
+        
         }
 
         Vector s = pos.scale(1/block).add(minVec.negative());
@@ -82,11 +88,17 @@ public class Perlin {
             d[i] = gradVecs[i].dot(offVecs[i]);
         }
 
-        //2d implementation
-        double i1 = d1 + f1*(d2 - d1);
-        double i2 = d3 + f1*(d4 - d3);
-        double finalValue = i1 + f2*(i2 - i1);
 
-        return finalValue;
+        double[] temps = d;
+        for (int i = dim; i > 0; i--) { //perform lerps
+            double[] interps = new double[(int)Math.pow(2, i)/2];
+            for (int j = 0; j < Math.pow(2, i-1); j++) {
+                interps[j] = temps[j] + f.getVals()[i-1]*(temps[(int)Math.pow(2,i)-j-1] - temps[j]);
+            }
+            temps = interps;
+        }
+
+        System.out.println(temps[0]);
+        return temps[0];
     }
 }

@@ -7,7 +7,7 @@ public class Vector {
 
     public Vector(int dimension, double... values) {
 
-        if (vals.length != dimension) {
+        if (values.length != dimension) {
             throw new IllegalArgumentException("Mismatched numbers of coords with dimension");
         }
 
@@ -76,6 +76,7 @@ public class Vector {
             s.append(vals[i]);
             if (i<dim-1) s.append(", ");
         }
+        s.append(")");
         return s.toString();
     }
 
@@ -109,5 +110,13 @@ public class Vector {
         for (int i = 0; i < dim; i++) {
             vals[i] *= scalar;
         }
+    }
+
+    public double magnitude() {
+        double sumSq = 0;
+        for (int i = 0; i < dim; i++) {
+            sumSq += vals[i] * vals[i];
+        }
+        return Math.sqrt(sumSq);
     }
 }

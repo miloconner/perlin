@@ -11,6 +11,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import util.Perlin;
+
 public class App extends Application {
 
     public App() {
@@ -67,6 +69,7 @@ public class App extends Application {
     }
 
     public void miloNoise(int size, PixelWriter pixelWriter) {
+        Perlin p = new Perlin(12345L, 50, 3);
         // // Console output and math logic (unchanged)
         // System.out.println("Value at 0,0: " + getValueAt(0, 0, seed));
         // System.out.println("Value at 9999,9999: " + getValueAt(9999, 9999, seed));
@@ -75,7 +78,7 @@ public class App extends Application {
         int t = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                double finalValue = noiseAt(i, j);
+                double finalValue = p.retrieve(i, j, 0);
                 pixelWriter.setColor(i, j, Color.rgb(toRGBValue(finalValue), 0, 0));
                 // System.out
                 // .println((int) Math.floor(((finalValue + (Math.sqrt(2) / 2)) * 255) /
@@ -158,7 +161,7 @@ public class App extends Application {
     }
 
     public int toRGBValue(double noiseValue) {
-        int rgbVal = (int) Math.floor(((noiseValue + (Math.sqrt(2) / 2)) * 255) / Math.sqrt(2));
+        int rgbVal = (int) Math.floor(((noiseValue + (Math.sqrt(3) / 2)) * 255) / Math.sqrt(3));
         return rgbVal;
     }
 }
