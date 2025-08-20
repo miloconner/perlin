@@ -3,42 +3,30 @@ package util;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Perlin {
+public class PerlinCopy {
 
     private double block;
     private long seed;
     private int dim;
 
-    public Perlin(long seed, double block, int dimension) {
+    public PerlinCopy(long seed, double block, int dimension) {
         this.seed = seed;
         this.block = block;
         this.dim = dimension;
     }
 
-    private double[] getGradientAt(long seed, double... coords) {
-        // mix seed with coords
-        long mixedSeed = seed;
-        for (double c : coords) {
-            mixedSeed = Math.round(mixedSeed * 67 + c);
+    private double[] getAnglesAt(long seed, int... coords) {
+        double[] rands = new double[dim];
+        for (int i = dim - 1; i > 0; i--) {
+            long randVal = seed;
+            for (int j = 0; j < i; j++) {
+                randVal = (long)Math.pow(randVal, coords[j]);
+            }
+            Random rand = new Random(randVal);
+            rands[i] = rand.nextDouble() * 2 * Math.PI;
         }
-
-        Random rand = new Random(mixedSeed);
-
-        double[] comps = new double[dim];
-        double sumSq = 0.0;
-        for (int i = 0; i < dim; i++) {
-            double g = rand.nextGaussian(); // gaussian needed for more random
-            comps[i] = g;
-            sumSq += g * g;
-        }
-
-        double invLen = 1.0 / Math.sqrt(sumSq);
-        for (int i = 0; i < dim; i++) {
-            comps[i] *= invLen;
-        }
-
-        return comps;
-    }   
+        return rands;
+    }
 
     private double smooth(double s) {
         return 6*Math.pow(s, 5) - 15*Math.pow(s, 4) + 10*Math.pow(s, 3);
@@ -71,39 +59,44 @@ public class Perlin {
         Vector[] gradVecs = new Vector[(int)Math.pow(2, dim)];
         Vector[] offVecs = new Vector[(int)Math.pow(2, dim)];
         for (int i = 0; i < Math.pow(2, dim); i++) {
-            double[] comps = getGradientAt(seed, corners[i].getVals());
+            double[] thetas = getAnglesAt(seed, Arrays.stream(corners[i].getVals()).mapToInt(d -> (int) d).toArray()); //gets the corners values, just casts to int using stream
+            
+            double[] comps = new double[dim];
+            double prod = 1;
 
+            for (int j = 0; j < dim-1; j++) {
+                comps[j] = prod * Math.cos(thetas[j]);
+                prod *= Math.sin(thetas[j]);
+            }
+
+            comps[dim-1] = prod;
             gradVecs[i] = new Vector(dim, comps);
-
-            offVecs[i] = pos.scale(1/block).add(corners[i].negative());
+            offVecs[i] = pos.add(corners[i].negative());
         }
 
         Vector s = pos.scale(1/block).add(minVec.negative());
-        double[] f = Arrays.stream(s.getVals()).map(x -> smooth(x)).toArray();
+        Vector f = new Vector(dim, Arrays.stream(s.getVals()).map(x -> smooth(x)).toArray());
 
         double[] d = new double[(int)Math.pow(2,dim)];
         for (int i = 0; i < Math.pow(2, dim); i++) {
             d[i] = gradVecs[i].dot(offVecs[i]);
         }
 
-        //improved lerp to do adjacent
         double[] temps = d;
         for (int i = dim; i > 0; i--) { //perform lerps
             double[] interps = new double[(int)Math.pow(2, i-1)];
             for (int j = 0; j < Math.pow(2, i-1); j++) {
-                interps[j] = temps[2*j] + f[dim-i]*(temps[2*j+1] - temps[2*j]); //SUPER IMPORTANT * LERPS HAVE TO BE DONE TO ACCORDING AXIS thats why it has to be dim - i because otherwise it applies the fade val to the wrong axis
+                interps[j] = temps[2*j] + f.getVals()[dim-i]*(temps[2*j+1] - temps[2*j]); //SUPER IMPORTANT * LERPS HAVE TO BE DONE TO ACCORDING AXIS thats why it has to be dim - i because otherwise it applies the fade val to the wrong axis
             }
             temps = interps;
         }
 
-        if (temps[0] > Math.sqrt(dim)/2) {
-            System.out.println("TOO HIGH:");
-            temps[0] = Math.sqrt(dim)/2;
-        }
-        if (temps[0] < -Math.sqrt(dim)/2) {
-            System.out.println("TOO LOW:");
-            temps[0] = -Math.sqrt(dim)/2;
-        }
+        // //2d implementation
+        // double i1 = d1 + f1*(d2 - d1);
+        // double i2 = d3 + f1*(d4 - d3);
+        // double finalValue = i1 + f2*(i2 - i1);
+
+        System.out.println(temps.length);
         return temps[0];
     }
 }

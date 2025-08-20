@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -14,6 +15,7 @@ import javafx.stage.Stage;
 import util.Perlin;
 
 public class App extends Application {
+    int z = 0;
 
     public App() {
         super();
@@ -69,21 +71,13 @@ public class App extends Application {
     }
 
     public void miloNoise(int size, PixelWriter pixelWriter) {
+        z++;
         Perlin p = new Perlin(12345L, 50, 3);
-        // // Console output and math logic (unchanged)
-        // System.out.println("Value at 0,0: " + getValueAt(0, 0, seed));
-        // System.out.println("Value at 9999,9999: " + getValueAt(9999, 9999, seed));
-        // System.out.println("Value at 9999,9999: " + getValueAt(9999, 9999, seed));
-        // System.out.println("Value at 9999,9999: " + getValueAt(9999, 9999, seed));
         int t = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                double finalValue = p.retrieve(i, j, 0);
+                double finalValue = p.retrieve(i, j, z);
                 pixelWriter.setColor(i, j, Color.rgb(toRGBValue(finalValue), 0, 0));
-                // System.out
-                // .println((int) Math.floor(((finalValue + (Math.sqrt(2) / 2)) * 255) /
-                // Math.sqrt(2))
-                // + ", " + t + ", " + finalValue);
                 t = t + 1;
             }
         }
@@ -158,6 +152,13 @@ public class App extends Application {
         primaryStage.show();
         miloNoise(size, pixelWriter);
         // mikeNoise(size, pixelWriter);
+
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.SPACE) {
+                miloNoise(size, pixelWriter);
+                System.out.println("SPACE");
+            }
+        });
     }
 
     public int toRGBValue(double noiseValue) {
